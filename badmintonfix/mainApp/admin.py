@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(club)
 admin.site.register(player)
 admin.site.register(match)
+admin.site.register(session)

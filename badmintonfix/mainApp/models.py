@@ -22,19 +22,24 @@ class player(models.Model):
     playerName = models.CharField(max_length = 255,primary_key = True)
     club = models.ForeignKey(club,on_delete=models.CASCADE)
     inGameFlag = models.BooleanField(default = False)
-    elo = models.IntegerField(default = 0)
+    elo = models.IntegerField(default = 1200)
 
 class session(models.Model):
-    date = models.DateField(default = get_today,primary_key=True)
+    sessionID = models.AutoField(primary_key=True)
+    date = models.DateField(default = get_today)
     players = models.ManyToManyField(player)
+
+    def __str__(self):
+        return self.date
 
 
 class match(models.Model):
     matchID = models.AutoField(primary_key=True)
-    session = models.ForeignKey(session,on_delete=models.CASCADE,default=get_today)
+    session = models.ForeignKey(session,on_delete=models.CASCADE)
     team1 = models.ManyToManyField(player, related_name='team1')
     team2 = models.ManyToManyField(player, related_name='team2')
-    score = models.IntegerField()
+    score = models.CharField(max_length = 255, default = '00-00')
+    completed = models.BooleanField(default=False)
 
     def clean(self):
         # Ensure that no player is in both team1 and team2
@@ -43,3 +48,8 @@ class match(models.Model):
             raise ValueError("A player cannot be in both team1 and team2.")
         if self.team1.count() > 2 or self.team2.count() > 2:
             raise ValueError("Each team can have a maximum of 2 players.")
+        
+    def __str__(self):
+        team1_names = ', '.join([player.playerName for player in self.team1.all()])
+        team2_names = ', '.join([player.playerName for player in self.team2.all()])
+        return f"{self.matchID} - Team1: {team1_names} - Team2: {team2_names} - {self.completed}"

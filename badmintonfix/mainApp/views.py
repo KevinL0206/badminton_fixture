@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import club,player
+from .models import club,player,match
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .forms import createClubForm
@@ -29,15 +29,36 @@ def createClub(request):
 @login_required
 def displayClubs(request,username):
     currentUser = request.user
-    query = club.objects.all().filter(clubOrganiser = currentUser)
+    query = club.objects.filter(clubOrganiser = currentUser)
     context = {'query':query}
 
     return render(request,'displayClubs.html',context)
 
 def displayClubDetails(request,username,clubname):
-    currentDate  = timezone.now().date()
+    
     currentUser = request.user
-    players = player.objects.all().filter(club = clubname)
+    club = club.objects.get(clubName = clubname,clubOrganiser = currentUser)
+    players = player.objects.filter(club=club)
 
-    return render(request,'displayClubDetails.html')
+    playerNames = [p.playerName for p in players]
 
+    context = {
+        'club':club,
+        'players':playerNames
+    }
+
+    return render(request,'displayClubDetails.html',context)
+
+def displaySession(request,username,clubname,sessionid):
+    matches = match.objects.filter(session = sessionid)
+    context = {
+        'matches':matches
+    }
+    return render(request,'displaysession.html',context)
+
+def displayMatch(request,username,clubname,sessionid,matchID):
+    match = match.objects.get(matchID=matchID)
+    context = {
+        'match':match
+    }
+    return render(request,"displayMatch.html",context)
