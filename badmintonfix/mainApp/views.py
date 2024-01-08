@@ -1,9 +1,10 @@
 from django.shortcuts import render,redirect
-from .models import club
+from .models import club,player
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .forms import createClubForm
 from django.contrib import messages
+from django.utils import timezone
 # Create your views here.
 
 @login_required
@@ -33,7 +34,10 @@ def displayClubs(request,username):
 
     return render(request,'displayClubs.html',context)
 
-def displayClubDetails(request):
+def displayClubDetails(request,username,clubname):
+    currentDate  = timezone.now().date()
+    currentUser = request.user
+    players = player.objects.all().filter(club = clubname)
 
     return render(request,'displayClubDetails.html')
 
