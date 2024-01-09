@@ -91,21 +91,22 @@ def displayMatch(request,username,clubname,sessionid,matchid):
     }
     return render(request,"displayMatch.html",context)
 
-def createMatch(request,user,sessionID,clubname):
+def createMatch(request,user,clubname,sessionID):
     organiserInstance = User.objects.get(username=user)
     clubInstance = club.objects.get(clubName = clubname, clubOrganiser = organiserInstance)
     sessionInstance = session.objects.get(sessionID=sessionID, club = clubInstance)
     freePlayers = list(sessionInstance.players.filter(inGameFlag = False).order_by('elo'))
-    
+    print(freePlayers)
     if len(freePlayers) <4:
         messages.success(request, 'Not Enough Players')
-        return redirect('displaySession',username = user,clubname = clubname,sessionid = sessionID)
+        return redirect('displaysession',username = user,clubname = clubname,sessionid = sessionID)
     else:
         matchPlayers = []
         for _ in range(4):
             if freePlayers:
                 player = freePlayers.pop()
                 player.inGameFlag = True
+                player.save()
                 matchPlayers.append(player)
 
         newMatchInstance = match.objects.create(
@@ -113,8 +114,8 @@ def createMatch(request,user,sessionID,clubname):
             score = '00-00'
         )
 
-        newMatchInstance.team1.add(matchPlayers[0],matchPlayers[2])
-        newMatchInstance.team2.add(matchPlayers[1],matchPlayers[3])
+        newMatchInstance.team1.add(matchPlayers[0],matchPlayers[3])
+        newMatchInstance.team2.add(matchPlayers[1],matchPlayers[2])
 
         return redirect('displayMatch',username=user,clubname = clubname, sessionid = sessionID,matchid = newMatchInstance.matchID)
     
