@@ -7,21 +7,24 @@
 </head>
 <body>
 
-
+    <h1>Match {{match}} Details:</h1>
     
     <h2>Score: {{score}}</h2>
 
     <h2>Team 1:</h2>
-
-    {% for player in team1 %}
-        {{player}} <br>
-    {% endfor %}
+    <ul>
+        {% for player in team1 %}
+            <li>{{player}}</li>
+        {% endfor %}
+    </ul>
+    
 
     <h2>Team 2:</h2>
-
-    {% for player in team2 %}
-        {{player}} <br>
-    {% endfor %}
+    <ul>
+        {% for player in team2 %}
+            <li>{{player}}</li>
+        {% endfor %}
+    </ul>
 
 
 

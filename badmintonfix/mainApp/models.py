@@ -22,6 +22,8 @@ class club(models.Model):
 class player(models.Model):
     playerName = models.CharField(max_length = 255,primary_key = True)
     club = models.ForeignKey(club,on_delete=models.CASCADE)
+    win = models.IntegerField(default = 0)
+    loss =  models.IntegerField(default = 0)
     inGameFlag = models.BooleanField(default = False)
     elo = models.IntegerField(default = 1200)
 
@@ -53,6 +55,7 @@ class match(models.Model):
             models.UniqueConstraint(fields=['matchID', 'session'], name='unique_match'),
         ]
 
-    
-
-        
+    def __str__(self):
+        team1_names = ", ".join([player.playerName for player in self.team1.all()])
+        team2_names = ", ".join([player.playerName for player in self.team2.all()])
+        return f"Match: {self.matchID} - Team 1: {team1_names} vs Team 2: {team2_names} - Completed:{self.completed}"
