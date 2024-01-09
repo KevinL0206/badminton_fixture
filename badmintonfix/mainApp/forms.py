@@ -8,3 +8,4 @@ class createClubForm(forms.ModelForm):
         model = club
         fields = '__all__'
         exclude  = ('clubOrganiser',)
+

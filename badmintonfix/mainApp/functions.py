@@ -55,3 +55,5 @@ def calcGameElo(team1,team2,winloss):
     playerFourNewElo = playerFourElo + playerFourK * (team2Outcome - expectedOutcomeTeam2)
 
     return playerOneNewElo,playerTwoNewElo,playerThreeNewElo,playerFourNewElo
+
+

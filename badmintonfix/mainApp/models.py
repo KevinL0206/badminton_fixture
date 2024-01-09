@@ -45,8 +45,8 @@ class session(models.Model):
 class match(models.Model):
     matchID = models.AutoField(primary_key=True)
     session = models.ForeignKey(session,on_delete=models.CASCADE)
-    team1 = models.ManyToManyField(player, related_name='team1')
-    team2 = models.ManyToManyField(player, related_name='team2')
+    team1 = models.ManyToManyField(player, related_name='team1', blank=True)
+    team2 = models.ManyToManyField(player, related_name='team2', blank=True)
     score = models.CharField(max_length = 255, default = '00-00')
     completed = models.BooleanField(default=False)
     
