@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 # Create your models here.
 def get_today():
     return timezone.now().date()
@@ -11,7 +12,7 @@ class club(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['clubName', 'clubOrganiser'], name='unique_field1_field2')
+            models.UniqueConstraint(fields=['clubName', 'clubOrganiser'], name='unique_club')
         ]
 
     def __str__(self):
@@ -26,11 +27,17 @@ class player(models.Model):
 
 class session(models.Model):
     sessionID = models.AutoField(primary_key=True)
+    club = models.ForeignKey(club,on_delete=models.CASCADE)
     date = models.DateField(default = get_today)
     players = models.ManyToManyField(player)
 
     def __str__(self):
-        return self.date
+        return str(self.date)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['sessionID', 'club'], name='unique_session')
+        ]
 
 
 class match(models.Model):
@@ -40,16 +47,12 @@ class match(models.Model):
     team2 = models.ManyToManyField(player, related_name='team2')
     score = models.CharField(max_length = 255, default = '00-00')
     completed = models.BooleanField(default=False)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['matchID', 'session'], name='unique_match'),
+        ]
 
-    def clean(self):
-        # Ensure that no player is in both team1 and team2
-        common_players = set(self.team1.all()) & set(self.team2.all())
-        if common_players:
-            raise ValueError("A player cannot be in both team1 and team2.")
-        if self.team1.count() > 2 or self.team2.count() > 2:
-            raise ValueError("Each team can have a maximum of 2 players.")
+    
+
         
-    def __str__(self):
-        team1_names = ', '.join([player.playerName for player in self.team1.all()])
-        team2_names = ', '.join([player.playerName for player in self.team2.all()])
-        return f"{self.matchID} - Team1: {team1_names} - Team2: {team2_names} - {self.completed}"
