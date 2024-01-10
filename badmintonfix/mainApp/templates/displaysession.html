@@ -13,8 +13,11 @@
         <a href="{% url 'displayMatch' username=user clubname=club sessionid=session matchid=match.matchID %}">{{match}} </a> <br>
     {% endfor %}
 
+    <br>
+    <button><a href="{% url 'displayAllSessions' username=user clubname=club%}">View All Sessions</a></button>
+    <br>
 
-    <button><a href="{% url 'displayClubDetails' username=user clubname=club%}">View Club Details</a></button>
+    <button><a href="{% url 'createMatch' username=user clubname=club sessionid=session%}">Create New Match</a></button>
 
     {% if messages %}
         {% for message in messages%}

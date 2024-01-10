@@ -18,6 +18,17 @@
         
     {% endfor %}
 
+    <h2>Add Player to Club</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        Player Name: {{form.playerName}} <br>
+        {{form.errors}}
+
+        <input type="submit" name="Add New PLayer">
+    </form>
+
+    <br>
     <button><a href="{% url 'displayAllSessions' username=user clubname=club%}">View All Sessions</a></button>
 
 </body>

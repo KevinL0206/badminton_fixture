@@ -2,14 +2,14 @@ from django.shortcuts import render,redirect
 from .models import club,player,match,session
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .forms import createClubForm,addScore
+from .forms import createClubForm,addScore,addPlayerForm
 from django.contrib import messages
 from django.utils import timezone
 from .functions import calcGameElo
 # Create your views here.
 
 @login_required
-def createClub(request):
+def createClub(request,username):
     form = createClubForm()
     context = {'form': form}
 
@@ -47,7 +47,24 @@ def displayClubDetails(request,username,clubname):
 
     playerNames = [p.playerName for p in players]
 
+    form = addPlayerForm()
+
+    if request.method == "POST":
+        form = addPlayerForm(request.POST)
+
+        if form.is_valid():
+            playername = form.cleaned_data['playerName']
+            newPlayerInstance = player.objects.create(
+                playerName = playername,
+                club = clubInstance
+            )
+            return redirect('displayClubDetails', username=username, clubname=clubname)
+        else:
+            messages.success(request, form.errors)
+            messages.success(request, 'Failed to Add Player')
+
     context = {
+        'form':form,
         'club':clubname,
         'players':playerNames,
         'user': currentUser
@@ -81,7 +98,6 @@ def displaySession(request,username,clubname,sessionid):
         'session':sessionid
     }
     return render(request,'displaysession.html',context)
-
 
 def displayMatch(request,username,clubname,sessionid,matchid):
     matchInstance = match.objects.get(matchID=matchid)
@@ -142,7 +158,7 @@ def displayMatch(request,username,clubname,sessionid,matchid):
 
             playerFourInstance.elo = playerFourNewElo
             playerFourInstance.inGameFlag = False
-            playerFourInstance.save()     
+            playerFourInstance.save()
         else:
             messages.success(request, form.errors)
             if matchInstance.completed:
@@ -165,15 +181,15 @@ def displayMatch(request,username,clubname,sessionid,matchid):
     return render(request,"displayMatch.html",context)
 
 @login_required
-def createMatch(request,user,clubname,sessionID):
-    organiserInstance = User.objects.get(username=user)
+def createMatch(request,username,clubname,sessionid):
+    organiserInstance = User.objects.get(username=username)
     clubInstance = club.objects.get(clubName = clubname, clubOrganiser = organiserInstance)
-    sessionInstance = session.objects.get(sessionID=sessionID, club = clubInstance)
+    sessionInstance = session.objects.get(sessionID=sessionid, club = clubInstance)
     freePlayers = list(sessionInstance.players.filter(inGameFlag = False).order_by('elo'))
     print(freePlayers)
     if len(freePlayers) <4:
         messages.success(request, 'Not Enough Players')
-        return redirect('displaysession',username = user,clubname = clubname,sessionid = sessionID)
+        return redirect('displaysession',username = username,clubname = clubname,sessionid = sessionid)
     else:
         matchPlayers = []
         for _ in range(4):
@@ -191,7 +207,21 @@ def createMatch(request,user,clubname,sessionID):
         newMatchInstance.team1.add(matchPlayers[0],matchPlayers[3])
         newMatchInstance.team2.add(matchPlayers[1],matchPlayers[2])
 
-        return redirect('displayMatch',username=user,clubname = clubname, sessionid = sessionID,matchid = newMatchInstance.matchID)
+        return redirect('displayMatch',username=username,clubname = clubname, sessionid = sessionid,matchid = newMatchInstance.matchID)
 
+@login_required
+def createSession(request,username,clubname):
+    userInstance = User.objects.get(username=username)
+    clubInstance = club.objects.get(clubName = clubname, clubOrganiser = userInstance)
+    date = timezone.now().date()
+
+    if session.objects.filter(club = clubInstance,date=date):
+        messages.success(request,'Session Already Exists')
+    else:
+        newSessionInstance = session.objects.create(
+            club = clubInstance,
+        )
+
+    return redirect('displayAllSessions', username=username, clubname=clubname)
 
 

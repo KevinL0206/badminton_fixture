@@ -43,7 +43,8 @@ class session(models.Model):
     
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['sessionID', 'club'], name='unique_session')
+            models.UniqueConstraint(fields=['sessionID', 'club'], name='unique_session'),
+            models.UniqueConstraint(fields=['club', 'date'], name='unique_club_date'),
         ]
 
 

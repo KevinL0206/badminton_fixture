@@ -11,5 +11,15 @@
     {% for session in sessions %}
         <a href="{% url 'displaysession' username=user clubname=club sessionid=session.sessionID%}">{{session}} </a> <br>
     {% endfor %}
+
+    <br>
+    <button> <a href="{% url 'createSession' username=user clubname=club %}">Create New Session</a></button>
+
+    {% if messages %}
+        {% for message in messages%}
+            <p>{{message}}</p>
+        {% endfor %}
+    {% endif %}
+
 </body>
 </html>
