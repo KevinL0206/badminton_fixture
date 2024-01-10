@@ -85,10 +85,10 @@ def displayMatch(request,username,clubname,sessionid,matchid):
     score = matchInstance.score
 
     form = addScore()
-    if request.method == "POST":
+    if request.method == "POST" :
         form = addScore(request.POST)
 
-        if form.is_valid():
+        if form.is_valid() and not matchInstance.completed:
             score = form.cleaned_data['score']
 
             #Get Match Score
@@ -113,28 +113,29 @@ def displayMatch(request,username,clubname,sessionid,matchid):
             playerThreeInstance = player.objects.get(playerName = team2_names[0],club = clubInstance)
             playerFourInstance = player.objects.get(playerName = team2_names[1],club = clubInstance)
             
-            if not matchInstance.completed:
-                #Update player ELO
-                playerOneInstance.elo = playerOneNewElo
-                playerOneInstance.inGameFlag = False
-                playerOneInstance.save()
+            
+            #Update player ELO
+            playerOneInstance.elo = playerOneNewElo
+            playerOneInstance.inGameFlag = False
+            playerOneInstance.save()
 
-                playerTwoInstance.elo = playerTwoNewElo
-                playerTwoInstance.inGameFlag = False
-                playerTwoInstance.save()
+            playerTwoInstance.elo = playerTwoNewElo
+            playerTwoInstance.inGameFlag = False
+            playerTwoInstance.save()
 
-                playerThreeInstance.elo = playerThreeNewElo
-                playerThreeInstance.inGameFlag = False
-                playerThreeInstance.save()
+            playerThreeInstance.elo = playerThreeNewElo
+            playerThreeInstance.inGameFlag = False
+            playerThreeInstance.save()
 
-                playerFourInstance.elo = playerFourNewElo
-                playerFourInstance.inGameFlag = False
-                playerFourInstance.save()
-            else:
-                messages.success(request, 'Score has Already Been Added')
+            playerFourInstance.elo = playerFourNewElo
+            playerFourInstance.inGameFlag = False
+            playerFourInstance.save()     
         else:
             messages.success(request, form.errors)
-            messages.success(request, 'Failed to Add Score')
+            if matchInstance.completed:
+                messages.success(request, 'Score Has already Been Added')
+            else:
+                messages.success(request, 'Failed to Add Score')
 
 
     context = {
