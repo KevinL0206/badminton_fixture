@@ -26,6 +26,21 @@
         {% endfor %}
     </ul>
 
+    <h1>Add Score</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{form}}
+
+        <input type="submit" name="Add Score">   
+        
+    </form> 
+
+    {% if messages %}
+        {% for message in messages%}
+            <p>{{message}}</p>
+        {% endfor %}
+    {% endif %}
+
 
 
 </body>

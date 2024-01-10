@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import club
+from .models import club,match
 
 class createClubForm(forms.ModelForm):
     class Meta:
@@ -9,3 +9,7 @@ class createClubForm(forms.ModelForm):
         fields = '__all__'
         exclude  = ('clubOrganiser',)
 
+class addScore(forms.ModelForm):
+    class Meta:
+        model = match
+        fields = ('score',)

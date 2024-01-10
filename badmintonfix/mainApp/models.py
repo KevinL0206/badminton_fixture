@@ -27,6 +27,11 @@ class player(models.Model):
     inGameFlag = models.BooleanField(default = False)
     elo = models.IntegerField(default = 1200)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['playerName', 'club'], name='unique_player')
+        ]
+
 class session(models.Model):
     sessionID = models.AutoField(primary_key=True)
     club = models.ForeignKey(club,on_delete=models.CASCADE)
