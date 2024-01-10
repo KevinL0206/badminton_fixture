@@ -34,6 +34,8 @@
         <input type="submit" name="Add Score">   
         
     </form> 
+    
+    <button> <a href="{% url 'displaysession' username=user clubname=club sessionid=session%}">View All Matches</a></button>
 
     {% if messages %}
         {% for message in messages%}

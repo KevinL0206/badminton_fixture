@@ -13,6 +13,9 @@
         <a href="{% url 'displayMatch' username=user clubname=club sessionid=session matchid=match.matchID %}">{{match}} </a> <br>
     {% endfor %}
 
+
+    <button><a href="{% url 'displayClubDetails' username=user clubname=club%}">View Club Details</a></button>
+
     {% if messages %}
         {% for message in messages%}
             <p>{{message}}</p>

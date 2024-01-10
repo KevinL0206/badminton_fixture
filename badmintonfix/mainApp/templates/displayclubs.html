@@ -8,7 +8,9 @@
 <body>
     <h1>Your Clubs</h1>
     {%  for club in query %}
-        {{club.clubName}} <br>
+    <a href="{% url 'displayClubDetails' username=user clubname=club.clubName%}">{{club.clubName}} </a> <br> 
     {% endfor %}
+
+    
 </body>
 </html>

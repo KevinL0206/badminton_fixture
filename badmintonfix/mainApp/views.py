@@ -48,13 +48,25 @@ def displayClubDetails(request,username,clubname):
     playerNames = [p.playerName for p in players]
 
     context = {
-        'club':clubInstance,
+        'club':clubname,
         'players':playerNames,
         'user': currentUser
     }
 
     return render(request,'displayClubDetails.html',context)
 
+def displayAllSessions(request,username,clubname):
+    userInstance = User.objects.get(username = username)
+    clubInstance = club.objects.get(clubName = clubname, clubOrganiser = userInstance)
+    sessions = session.objects.filter(club=clubInstance)
+
+    context = {
+        'user': username,
+        'club':clubname,
+        'sessions':sessions
+    }
+
+    return render(request,'displayAllSessions.html',context)
 
 def displaySession(request,username,clubname,sessionid):
     matches = match.objects.filter(session = sessionid)
@@ -146,7 +158,8 @@ def displayMatch(request,username,clubname,sessionid,matchid):
     'club':clubname,
     'team1':team1_names,
     'team2':team2_names,
-    'score':score
+    'score':score,
+    'session':sessionid
     }
 
     return render(request,"displayMatch.html",context)
