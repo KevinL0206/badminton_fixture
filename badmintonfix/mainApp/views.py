@@ -58,14 +58,15 @@ def displayClubDetails(request,username,clubname):
 
 def displaySession(request,username,clubname,sessionid):
     matches = match.objects.filter(session = sessionid)
-    matches = [str(match) for match in matches]
+    matchesStr = [str(match) for match in matches]
     sessionInstance = session.objects.get(sessionID = sessionid)
     date = sessionInstance.date
     context = {
         'matches':matches,
         'user': username,
         'club':clubname,
-        'date':date
+        'date':date,
+        'session':sessionid
     }
     return render(request,'displaysession.html',context)
 
@@ -150,12 +151,7 @@ def displayMatch(request,username,clubname,sessionid,matchid):
 
     return render(request,"displayMatch.html",context)
 
-
-
-
-
-
-
+@login_required
 def createMatch(request,user,clubname,sessionID):
     organiserInstance = User.objects.get(username=user)
     clubInstance = club.objects.get(clubName = clubname, clubOrganiser = organiserInstance)

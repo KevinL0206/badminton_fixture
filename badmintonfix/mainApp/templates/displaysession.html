@@ -10,7 +10,7 @@
     <h1> {{date}} Matches</h1>
 
     {% for match in matches %}
-        {{match}} <br>
+        <a href="{% url 'displayMatch' username=user clubname=club sessionid=session matchid=match.matchID %}">{{match}} </a> <br>
     {% endfor %}
 
     {% if messages %}
