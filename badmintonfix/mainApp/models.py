@@ -27,6 +27,9 @@ class player(models.Model):
     inGameFlag = models.BooleanField(default = False)
     elo = models.IntegerField(default = 1200)
 
+    def __str__(self):
+        return str(self.playerName)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['playerName', 'club'], name='unique_player')

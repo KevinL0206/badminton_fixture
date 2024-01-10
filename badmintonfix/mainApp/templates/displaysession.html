@@ -14,9 +14,52 @@
     {% endfor %}
 
     <br>
+
+    <h2>Players in Session:</h2>
+
+    <p>
+        {% for player in players %}
+            {{player}} -
+        {% endfor %}
+    </p>
+    
+
+    <h2>Add Players to Session</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {%for field in form%}
+            
+                
+                <p>{{field.label}}: {{field}}</p>
+            
+            {% endfor %}
+
+            {{form.errors}}
+            <input type="submit" name="Add_Player_to_Session">
+        </form>
+    
+    <h2>Remove Players From Session</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {%for field in deleteplayerform%}
+            
+                
+                <p>{{field.label}}: {{field}}</p>
+            
+            {% endfor %}
+
+            {{form.errors}}
+            <input type="submit" name="Delete_Player_From_Session">
+        </form>
+
+
+    <br>
     <button><a href="{% url 'displayAllSessions' username=user clubname=club%}">View All Sessions</a></button>
     <br>
-
     <button><a href="{% url 'createMatch' username=user clubname=club sessionid=session%}">Create New Match</a></button>
 
     {% if messages %}

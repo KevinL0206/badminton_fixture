@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from .models import club,player,match,session
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .forms import createClubForm,addScore,addPlayerForm
+from .forms import createClubForm,addScore,addPlayerForm,addSessionPlayerForm,deleteSessionPlayerForm
 from django.contrib import messages
 from django.utils import timezone
 from .functions import calcGameElo
@@ -86,16 +86,62 @@ def displayAllSessions(request,username,clubname):
     return render(request,'displayAllSessions.html',context)
 
 def displaySession(request,username,clubname,sessionid):
+    userInstance = User.objects.get(username = username)
+    clubInstance = club.objects.get(clubName = clubname, clubOrganiser = userInstance)
     matches = match.objects.filter(session = sessionid)
     matchesStr = [str(match) for match in matches]
     sessionInstance = session.objects.get(sessionID = sessionid)
     date = sessionInstance.date
+
+    session_players = sessionInstance.players
+    player_names = [player.playerName for player in session_players.all()]
+    form = addSessionPlayerForm(club = clubInstance, session = sessionInstance)
+    deletePlayerForm = deleteSessionPlayerForm(club = clubInstance, session = sessionInstance)
+
+    if request.method == "POST":
+
+        add_button_clicked = 'Add_Player_to_Session' in request.POST
+        delete_button_clicked = 'Delete_Player_From_Session' in request.POST
+
+        if add_button_clicked:
+            form = addSessionPlayerForm(request.POST, club=clubInstance, session=sessionInstance)
+            if form.is_valid():
+
+                players = form.cleaned_data['players']
+                print(1)
+
+                for player in players:
+                    sessionInstance.players.add(player)
+                
+                return redirect('displaysession', username = username,clubname = clubname,sessionid = sessionid)
+            else:
+                messages.success(request, form.errors)
+                messages.success(request,'Failed to Add Players')
+
+        elif delete_button_clicked:
+            deletePlayerForm = deleteSessionPlayerForm(request.POST, club=clubInstance, session=sessionInstance)
+            
+            if deletePlayerForm.is_valid():
+
+                players = deletePlayerForm.cleaned_data['players']
+                print(2)
+                for player in players:
+                    sessionInstance.players.remove(player)
+                
+                return redirect('displaysession', username = username,clubname = clubname,sessionid = sessionid)
+            else:
+                messages.success(request, form.errors)
+                messages.success(request,'Failed to Remove Players')
+
     context = {
+        'form':form,
+        'deleteplayerform':deletePlayerForm,
         'matches':matches,
         'user': username,
         'club':clubname,
         'date':date,
-        'session':sessionid
+        'session':sessionid,
+        'players': player_names
     }
     return render(request,'displaysession.html',context)
 
