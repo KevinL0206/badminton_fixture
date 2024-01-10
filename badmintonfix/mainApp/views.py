@@ -108,7 +108,6 @@ def displaySession(request,username,clubname,sessionid):
             if form.is_valid():
 
                 players = form.cleaned_data['players']
-                print(1)
 
                 for player in players:
                     sessionInstance.players.add(player)
@@ -124,7 +123,7 @@ def displaySession(request,username,clubname,sessionid):
             if deletePlayerForm.is_valid():
 
                 players = deletePlayerForm.cleaned_data['players']
-                print(2)
+
                 for player in players:
                     sessionInstance.players.remove(player)
                 
@@ -267,6 +266,12 @@ def createSession(request,username,clubname):
         newSessionInstance = session.objects.create(
             club = clubInstance,
         )
+
+        clubPlayers = player.objects.filter(club = clubInstance)
+        print (clubPlayers)
+        for players in clubPlayers:
+            players.inGameFlag = False
+            players.save()
 
     return redirect('displayAllSessions', username=username, clubname=clubname)
 
